@@ -1,9 +1,22 @@
+const path = require('path');
+const fs = require('fs');
+
+const screenshotDir = path.join(__dirname, '..', '..', 'screenshots');
+
 describe('Propac PromoHub Login', () => {
+    before(() => {
+        if (!fs.existsSync(screenshotDir)) {
+            fs.mkdirSync(screenshotDir, { recursive: true });
+        }
+    });
+
     it('should navigate to the login page', async () => {
         await browser.url('/');
         const loginForm = await $('#loginform');
         await loginForm.waitForDisplayed({ timeout: 10000 });
-        console.log('Login page loaded successfully');
+
+        await browser.saveScreenshot(path.join(screenshotDir, '01-login-page.png'));
+        console.log('Screenshot saved: 01-login-page.png');
     });
 
     it('should enter email and password and submit', async () => {
@@ -16,10 +29,8 @@ describe('Propac PromoHub Login', () => {
         await emailInput.setValue('damian@argano.com');
         await passwordInput.setValue('Hello');
 
-        const emailValue = await emailInput.getValue();
-        const passwordValue = await passwordInput.getValue();
-        console.log(`Email entered: ${emailValue}`);
-        console.log(`Password entered: ${'*'.repeat(passwordValue.length)}`);
+        await browser.saveScreenshot(path.join(screenshotDir, '02-credentials-entered.png'));
+        console.log('Screenshot saved: 02-credentials-entered.png');
 
         await loginButton.click();
         console.log('Login button clicked');
@@ -27,6 +38,9 @@ describe('Propac PromoHub Login', () => {
 
     it('should verify login result', async () => {
         await browser.pause(5000);
+
+        await browser.saveScreenshot(path.join(screenshotDir, '03-after-login.png'));
+        console.log('Screenshot saved: 03-after-login.png');
 
         const currentUrl = await browser.getUrl();
         console.log(`Current URL after login: ${currentUrl}`);
